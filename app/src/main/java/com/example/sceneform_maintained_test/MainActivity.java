@@ -50,7 +50,7 @@ public class MainActivity extends AppCompatActivity implements
     private Renderable model;
     private AnchorNode anchorNode;
     TransformableNode modelNode;
-    private int qtd = 0;
+    private boolean placed = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity implements
             Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(qtd<1) {
+        if(placed == false) {
             Toast.makeText(this, "Loaded", Toast.LENGTH_SHORT).show();
             // Create the Anchor.
             Anchor anchor = hitResult.createAnchor();
@@ -133,8 +133,8 @@ public class MainActivity extends AppCompatActivity implements
 
             //model.getScaleController().setMinScale(0.1f);
 
-            modelNode.setLocalScale(new Vector3(1f, 1f, 1f));
-            Log.i("teste", "teste" + modelNode.getLocalScale());
+            //modelNode.setLocalScale(new Vector3(1f, 1f, 1f));
+            //Log.i("teste", "teste" + modelNode.getLocalScale());
 
             modelNode.setParent(anchorNode);
 
@@ -142,7 +142,7 @@ public class MainActivity extends AppCompatActivity implements
                     .animate(false);
 
             modelNode.select();
-            qtd++;
+            placed = true;
         }else{
             Toast.makeText(this, "Max reached", Toast.LENGTH_SHORT).show();
         }
@@ -157,7 +157,7 @@ public class MainActivity extends AppCompatActivity implements
     public void removeNode(View v){
         Toast.makeText(this, "Removed", Toast.LENGTH_SHORT).show();
          modelNode.setParent(null);
-         this.qtd--;
+         this.placed = false;
     }
     public void hideShow(View v){
         Toast.makeText(this, "Enable/Disable", Toast.LENGTH_SHORT).show();
