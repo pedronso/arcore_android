@@ -4,15 +4,19 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".MainActivity">
+    tools:context=".ARActivity">
 
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/arFragment"
         android:name="com.google.ar.sceneform.ux.ArFragment"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:layout_editor_absoluteX="0dp"
-        tools:layout_editor_absoluteY="0dp" />
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.0" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_hide_show"
@@ -24,11 +28,31 @@
         android:clickable="true"
         android:focusable="true"
         android:onClick="hideShow"
+        android:tooltipText="Ocultar/mostrar modelo"
         app:elevation="1dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_remove"
         app:layout_constraintHorizontal_chainStyle="spread"
         app:srcCompat="@android:drawable/ic_menu_view"
+        tools:ignore="SpeakableTextPresentCheck" />
+
+    <com.google.android.material.floatingactionbutton.FloatingActionButton
+        android:id="@+id/btn_light_up"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="80dp"
+        android:layout_marginBottom="16dp"
+        android:backgroundTint="#00BCD4"
+        android:clickable="true"
+        android:focusable="true"
+        android:onClick="lightSet"
+        android:tooltipText="Aumentar luz indireta"
+
+        app:elevation="1dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@+id/btn_remove"
+        app:layout_constraintHorizontal_chainStyle="spread"
+        app:srcCompat="@drawable/light"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -40,6 +64,8 @@
         android:layout_marginBottom="4dp"
         android:backgroundTint="#00BCD4"
         android:onClick="removeNode"
+        android:tooltipText="Remover modelo"
+
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_anim"
@@ -56,11 +82,25 @@
         android:layout_marginBottom="16dp"
         android:backgroundTint="#00BCD4"
         android:onClick="modelAnimation"
+        android:tooltipText="Iniciar animação"
+
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:rippleColor="#090000"
         app:srcCompat="@drawable/ic_baseline_play_arrow_24"
         tools:ignore="SpeakableTextPresentCheck" />
+
+    <SeekBar
+        android:id="@+id/lightSlider"
+        android:layout_width="354dp"
+        android:layout_height="44dp"
+        android:layout_marginStart="24dp"
+        android:indeterminate="false"
+        android:min="20000"
+        android:max="200000"
+        app:layout_constraintBottom_toTopOf="@+id/btn_light_up"
+        app:layout_constraintStart_toStartOf="parent" />
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

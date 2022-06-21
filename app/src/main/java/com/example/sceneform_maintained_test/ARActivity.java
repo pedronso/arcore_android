@@ -3,16 +3,14 @@ package com.example.sceneform_maintained_test;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.os.Bundle;
-import android.net.Uri;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
-import android.widget.Switch;
+import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
@@ -26,20 +24,22 @@ import com.google.ar.sceneform.AnchorNode;
 import com.google.ar.sceneform.ArSceneView;
 import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
-import com.google.ar.sceneform.Scene;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.Sceneform;
-import com.google.ar.sceneform.math.Vector3;
+import com.google.ar.sceneform.rendering.Color;
+import com.google.ar.sceneform.rendering.Light;
 import com.google.ar.sceneform.rendering.ModelRenderable;
 import com.google.ar.sceneform.rendering.Renderable;
-import com.google.ar.sceneform.rendering.ViewRenderable;
+import com.google.ar.sceneform.rendering.PlaneRenderer;
+
+import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
 import java.lang.ref.WeakReference;
 
-public class MainActivity extends AppCompatActivity implements
+public class ARActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
         BaseArFragment.OnTapArPlaneListener,
         BaseArFragment.OnSessionConfigurationListener,
@@ -49,14 +49,15 @@ public class MainActivity extends AppCompatActivity implements
     private ArFragment arFragment;
     private Renderable model;
     private AnchorNode anchorNode;
-    TransformableNode modelNode;
+    private TransformableNode modelNode;
     private boolean placed = false;
+    private SeekBar lightSlide;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_main);
+        setContentView(R.layout.activity_ar);
         getSupportFragmentManager().addFragmentOnAttachListener(this);
 
         if (savedInstanceState == null) {
@@ -67,7 +68,9 @@ public class MainActivity extends AppCompatActivity implements
             }
         }
 
+        lightSlide  = (SeekBar) findViewById(R.id.lightSlider);
         loadModels();
+        lightChange();
     }
 
     @Override
@@ -96,14 +99,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void loadModels() {
-        WeakReference<MainActivity> weakActivity = new WeakReference<>(this);
+        WeakReference<ARActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
                 .setSource(this, R.raw.lamp_weapon_first_animation)
                 .setIsFilamentGltf(true)
                 .setAsyncLoadEnabled(true)
                 .build()
                 .thenAccept(model -> {
-                    MainActivity activity = weakActivity.get();
+                    ARActivity activity = weakActivity.get();
                     if (activity != null) {
                         activity.model = model;
                     }
@@ -141,6 +144,7 @@ public class MainActivity extends AppCompatActivity implements
             modelNode.setRenderable(this.model)
                     .animate(false);
 
+            lightSlide.setProgress((int) arFragment.getArSceneView()._environment.getIndirectLight().getIntensity());
             modelNode.select();
             placed = true;
         }else{
@@ -168,5 +172,36 @@ public class MainActivity extends AppCompatActivity implements
         modelNode.setRenderable(this.model)
                 .animate(false).start();
     }
+
+    public void planeHide(View v){
+        arFragment.getArSceneView().getPlaneRenderer().setEnabled(!arFragment.getArSceneView().getPlaneRenderer().isEnabled());
+    }
+
+    public void lightSet(View v){
+        arFragment.getArSceneView()._environment.getIndirectLight().setIntensity(100000f);
+        lightSlide.setProgress((int) arFragment.getArSceneView()._environment.getIndirectLight().getIntensity());
+        Log.i("lumen", "lumen" + String.valueOf(arFragment.getArSceneView()._environment.getIndirectLight().getIntensity()));
+    }
+
+    public void lightChange(){
+
+        lightSlide.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged(SeekBar seekBar, int i, boolean b) {
+                arFragment.getArSceneView()._environment.getIndirectLight().setIntensity((float) i);
+            }
+
+            @Override
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            @Override
+            public void onStopTrackingTouch(SeekBar seekBar) {
+
+            }
+        });
+    }
+
 
 }
