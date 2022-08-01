@@ -2,10 +2,14 @@ package com.example.sceneform_maintained_test;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.SeekBar;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View;
@@ -15,6 +19,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentOnAttachListener;
 
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.ar.core.Anchor;
 import com.google.ar.core.Config;
 import com.google.ar.core.HitResult;
@@ -37,6 +42,8 @@ import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
 
+import org.w3c.dom.Text;
+
 import java.lang.ref.WeakReference;
 
 public class ARActivity extends AppCompatActivity implements
@@ -44,14 +51,16 @@ public class ARActivity extends AppCompatActivity implements
         BaseArFragment.OnTapArPlaneListener,
         BaseArFragment.OnSessionConfigurationListener,
         ArFragment.OnViewCreatedListener,
-        Node.OnTapListener{
+        AdapterView.OnItemSelectedListener{
 
     private ArFragment arFragment;
-    private Renderable model;
+    private Renderable SelectedModel, LampLowModel, LampHighModel, LinkModel;
     private AnchorNode anchorNode;
     private TransformableNode modelNode;
     private boolean placed = false;
     private SeekBar lightSlide;
+    private Spinner modelSelection;
+    private FloatingActionButton visible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +78,14 @@ public class ARActivity extends AppCompatActivity implements
         }
 
         lightSlide  = (SeekBar) findViewById(R.id.lightSlider);
+        modelSelection = (Spinner) findViewById(R.id.modelSpinner);
+        visible = (FloatingActionButton) findViewById(R.id.btn_hide_show);
+
+        ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.models, android.R.layout.simple_spinner_item);
+        adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        modelSelection.setAdapter(adapter);
+        modelSelection.setOnItemSelectedListener(this);
+
         loadModels();
         lightChange();
     }
@@ -101,14 +118,46 @@ public class ARActivity extends AppCompatActivity implements
     public void loadModels() {
         WeakReference<ARActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
-                .setSource(this, R.raw.lamp_weapon_first_animation)
+                .setSource(this, R.raw.lamp_weapon_second_animation)
                 .setIsFilamentGltf(true)
                 .setAsyncLoadEnabled(true)
                 .build()
                 .thenAccept(model -> {
                     ARActivity activity = weakActivity.get();
                     if (activity != null) {
-                        activity.model = model;
+                        activity.LampLowModel = model;
+                    }
+                })
+                .exceptionally(throwable -> {
+                    Toast.makeText(
+                            this, "Unable to load model", Toast.LENGTH_LONG).show();
+                    return null;
+                });
+        ModelRenderable.builder()
+                .setSource(this, R.raw.lamp_high)
+                .setIsFilamentGltf(true)
+                .setAsyncLoadEnabled(true)
+                .build()
+                .thenAccept(model -> {
+                    ARActivity activity = weakActivity.get();
+                    if (activity != null) {
+                        activity.LampHighModel = model;
+                    }
+                })
+                .exceptionally(throwable -> {
+                    Toast.makeText(
+                            this, "Unable to load model", Toast.LENGTH_LONG).show();
+                    return null;
+                });
+        ModelRenderable.builder()
+                .setSource(this, R.raw.link)
+                .setIsFilamentGltf(true)
+                .setAsyncLoadEnabled(true)
+                .build()
+                .thenAccept(model -> {
+                    ARActivity activity = weakActivity.get();
+                    if (activity != null) {
+                        activity.LinkModel = model;
                     }
                 })
                 .exceptionally(throwable -> {
@@ -120,7 +169,7 @@ public class ARActivity extends AppCompatActivity implements
 
     @Override
     public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
-        if (model == null) {
+        if (SelectedModel == null) {
             Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
             return;
         }
@@ -141,7 +190,7 @@ public class ARActivity extends AppCompatActivity implements
 
             modelNode.setParent(anchorNode);
 
-            modelNode.setRenderable(this.model)
+            modelNode.setRenderable(this.SelectedModel)
                     .animate(false);
 
             lightSlide.setProgress((int) arFragment.getArSceneView()._environment.getIndirectLight().getIntensity());
@@ -153,34 +202,25 @@ public class ARActivity extends AppCompatActivity implements
 
     }
 
-    @Override
-    public void onTap(HitTestResult hitTestResult, MotionEvent motionEvent) {
-            Toast.makeText(this, "Touch tapped", Toast.LENGTH_SHORT).show();
-    }
-
     public void removeNode(View v){
-        Toast.makeText(this, "Removed", Toast.LENGTH_SHORT).show();
-         modelNode.setParent(null);
-         this.placed = false;
+        if(placed) {
+            modelNode.setParent(null);
+            lightSlide.setProgress(30000);
+            this.placed = false;
+            Toast.makeText(this, "Removed", Toast.LENGTH_SHORT).show();
+        }
     }
     public void hideShow(View v){
-        Toast.makeText(this, "Enable/Disable", Toast.LENGTH_SHORT).show();
-        modelNode.setEnabled(!modelNode.isEnabled());
+        if(placed) {
+            Toast.makeText(this, "Enable/Disable", Toast.LENGTH_SHORT).show();
+            modelNode.setEnabled(!modelNode.isEnabled());
+        }
     }
-    public void modelAnimation(View v){
-        Toast.makeText(this, "Animation", Toast.LENGTH_SHORT).show();
-        modelNode.setRenderable(this.model)
-                .animate(false).start();
-    }
-
-    public void planeHide(View v){
-        arFragment.getArSceneView().getPlaneRenderer().setEnabled(!arFragment.getArSceneView().getPlaneRenderer().isEnabled());
-    }
-
-    public void lightSet(View v){
-        arFragment.getArSceneView()._environment.getIndirectLight().setIntensity(100000f);
-        lightSlide.setProgress((int) arFragment.getArSceneView()._environment.getIndirectLight().getIntensity());
-        Log.i("lumen", "lumen" + String.valueOf(arFragment.getArSceneView()._environment.getIndirectLight().getIntensity()));
+    public void modelAnimation(View v) {
+        if(placed){
+            modelNode.setRenderable(this.SelectedModel)
+                    .animate(false).start();
+        }
     }
 
     public void lightChange(){
@@ -204,4 +244,20 @@ public class ARActivity extends AppCompatActivity implements
     }
 
 
+    @Override
+    public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            String text = modelSelection.getSelectedItem().toString();
+            if (text.equals("Lampião Low")) {
+                SelectedModel = LampLowModel;
+            } else if (text.equals("Lampião High")) {
+                SelectedModel = LampHighModel;
+            } else if (text.equals("Link")) {
+                SelectedModel = LinkModel;
+            }
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> adapterView) {
+
+    }
 }

@@ -13,7 +13,7 @@
         android:layout_height="0dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
@@ -33,26 +33,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_remove"
         app:layout_constraintHorizontal_chainStyle="spread"
-        app:srcCompat="@android:drawable/ic_menu_view"
-        tools:ignore="SpeakableTextPresentCheck" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_light_up"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="80dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="#00BCD4"
-        android:clickable="true"
-        android:focusable="true"
-        android:onClick="lightSet"
-        android:tooltipText="Aumentar luz indireta"
-
-        app:elevation="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_remove"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:srcCompat="@drawable/light"
+        app:srcCompat="@drawable/eye"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -70,7 +51,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_anim"
         app:rippleColor="#090000"
-        app:srcCompat="@android:drawable/ic_menu_delete"
+        app:srcCompat="@drawable/trash_can_icon_198505"
         tools:ignore="SpeakableTextPresentCheck" />
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
@@ -93,13 +74,25 @@
 
     <SeekBar
         android:id="@+id/lightSlider"
-        android:layout_width="354dp"
-        android:layout_height="44dp"
-        android:layout_marginStart="24dp"
+        android:layout_width="185dp"
+        android:layout_height="60dp"
+        android:layout_marginStart="4dp"
+        android:layout_marginBottom="12dp"
         android:indeterminate="false"
-        android:min="20000"
         android:max="200000"
-        app:layout_constraintBottom_toTopOf="@+id/btn_light_up"
+        android:min="20000"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+    <Spinner
+        android:id="@+id/modelSpinner"
+        android:layout_width="214dp"
+        android:layout_height="27dp"
+        android:layout_marginBottom="88dp"
+        android:spinnerMode="dropdown"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
         app:layout_constraintStart_toStartOf="parent" />
 
 

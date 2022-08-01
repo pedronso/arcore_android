@@ -1,3 +1,9 @@
 <resources>
-    <string name="app_name">sceneform_maintained_test</string>
+    <string name="app_name">Museu do Cangaço AR</string>
+    <string-array name = "models">
+        <item>Lampião Low</item>
+        <item>Lampião High</item>
+        <item>Link</item>
+
+    </string-array>
 </resources>
