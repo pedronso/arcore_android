@@ -3,7 +3,5 @@
     <string-array name = "models">
         <item>Lampião Low</item>
         <item>Lampião High</item>
-        <item>Link</item>
-
     </string-array>
 </resources>

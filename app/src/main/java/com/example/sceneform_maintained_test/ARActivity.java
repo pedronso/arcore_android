@@ -41,6 +41,8 @@ import com.google.ar.sceneform.rendering.Texture;
 import com.google.ar.sceneform.ux.ArFragment;
 import com.google.ar.sceneform.ux.BaseArFragment;
 import com.google.ar.sceneform.ux.TransformableNode;
+import com.gorisse.thomas.sceneform.light.LightEstimationConfig;
+import com.gorisse.thomas.sceneform.light.LightEstimationKt;
 
 import org.w3c.dom.Text;
 
@@ -54,7 +56,7 @@ public class ARActivity extends AppCompatActivity implements
         AdapterView.OnItemSelectedListener{
 
     private ArFragment arFragment;
-    private Renderable SelectedModel, LampLowModel, LampHighModel, LinkModel;
+    private Renderable SelectedModel, LampLowModel, LampHighModel;
     private AnchorNode anchorNode;
     private TransformableNode modelNode;
     private boolean placed = false;
@@ -149,22 +151,6 @@ public class ARActivity extends AppCompatActivity implements
                             this, "Unable to load model", Toast.LENGTH_LONG).show();
                     return null;
                 });
-        ModelRenderable.builder()
-                .setSource(this, R.raw.link)
-                .setIsFilamentGltf(true)
-                .setAsyncLoadEnabled(true)
-                .build()
-                .thenAccept(model -> {
-                    ARActivity activity = weakActivity.get();
-                    if (activity != null) {
-                        activity.LinkModel = model;
-                    }
-                })
-                .exceptionally(throwable -> {
-                    Toast.makeText(
-                            this, "Unable to load model", Toast.LENGTH_LONG).show();
-                    return null;
-                });
     }
 
     @Override
@@ -251,8 +237,6 @@ public class ARActivity extends AppCompatActivity implements
                 SelectedModel = LampLowModel;
             } else if (text.equals("Lampião High")) {
                 SelectedModel = LampHighModel;
-            } else if (text.equals("Link")) {
-                SelectedModel = LinkModel;
             }
     }
 
