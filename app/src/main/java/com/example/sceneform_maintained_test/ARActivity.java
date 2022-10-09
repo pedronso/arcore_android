@@ -31,6 +31,7 @@ import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.Sceneform;
+import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.Light;
 import com.google.ar.sceneform.rendering.ModelRenderable;
@@ -56,13 +57,13 @@ public class ARActivity extends AppCompatActivity implements
         AdapterView.OnItemSelectedListener{
 
     private ArFragment arFragment;
-    private Renderable SelectedModel, LampLowModel, LampHighModel;
+    private Renderable SelectedModel, LampModel, MariaModel;
     private AnchorNode anchorNode;
-    private TransformableNode modelNode;
-    private boolean placed = false;
+    private TransformableNode modelNodeLamp, modelNodeMari;
+    private boolean placedLamp = false, placedMari = false;
+
     private SeekBar lightSlide;
     private Spinner modelSelection;
-    private FloatingActionButton visible;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,7 +82,6 @@ public class ARActivity extends AppCompatActivity implements
 
         lightSlide  = (SeekBar) findViewById(R.id.lightSlider);
         modelSelection = (Spinner) findViewById(R.id.modelSpinner);
-        visible = (FloatingActionButton) findViewById(R.id.btn_hide_show);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.models, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -127,28 +127,28 @@ public class ARActivity extends AppCompatActivity implements
                 .thenAccept(model -> {
                     ARActivity activity = weakActivity.get();
                     if (activity != null) {
-                        activity.LampLowModel = model;
+                        activity.LampModel = model;
                     }
                 })
                 .exceptionally(throwable -> {
                     Toast.makeText(
-                            this, "Unable to load model", Toast.LENGTH_LONG).show();
+                            this, "Não foi possível carregar o modelo", Toast.LENGTH_SHORT).show();
                     return null;
                 });
         ModelRenderable.builder()
-                .setSource(this, R.raw.lamp_high)
+                .setSource(this, R.raw.maria)
                 .setIsFilamentGltf(true)
                 .setAsyncLoadEnabled(true)
                 .build()
                 .thenAccept(model -> {
                     ARActivity activity = weakActivity.get();
                     if (activity != null) {
-                        activity.LampHighModel = model;
+                        activity.MariaModel = model;
                     }
                 })
                 .exceptionally(throwable -> {
                     Toast.makeText(
-                            this, "Unable to load model", Toast.LENGTH_LONG).show();
+                            this, "Não foi possível carregar o modelo", Toast.LENGTH_SHORT).show();
                     return null;
                 });
     }
@@ -156,56 +156,84 @@ public class ARActivity extends AppCompatActivity implements
     @Override
     public void onTapPlane(HitResult hitResult, Plane plane, MotionEvent motionEvent) {
         if (SelectedModel == null) {
-            Toast.makeText(this, "Loading...", Toast.LENGTH_SHORT).show();
+            Toast.makeText(this, "Carregando...", Toast.LENGTH_SHORT).show();
             return;
         }
-        if(placed == false) {
-            Toast.makeText(this, "Loaded", Toast.LENGTH_SHORT).show();
-            // Create the Anchor.
-            Anchor anchor = hitResult.createAnchor();
-            anchorNode = new AnchorNode(anchor);
-            anchorNode.setParent(arFragment.getArSceneView().getScene());
+        if (modelSelection.getSelectedItem().toString().equals("Lampião")) {
 
-            // Create the transformable model and add it to the anchor.
-            modelNode = new TransformableNode(arFragment.getTransformationSystem());
+            if (placedLamp == false) {
+                // Create the Anchor.
+                Anchor anchor = hitResult.createAnchor();
+                anchorNode = new AnchorNode(anchor);
+                anchorNode.setParent(arFragment.getArSceneView().getScene());
 
-            //model.getScaleController().setMinScale(0.1f);
+                // Create the transformable model and add it to the anchor.
+                modelNodeLamp = new TransformableNode(arFragment.getTransformationSystem());
+                //model.getScaleController().setMinScale(0.1f);
+                //modelNodeLamp.setLocalScale(new Vector3(1f, 1f, 1f));
 
-            //modelNode.setLocalScale(new Vector3(1f, 1f, 1f));
-            //Log.i("teste", "teste" + modelNode.getLocalScale());
+                modelNodeLamp.setParent(anchorNode);
 
-            modelNode.setParent(anchorNode);
+                modelNodeLamp.setRenderable(this.SelectedModel)
+                        .animate(false);
 
-            modelNode.setRenderable(this.SelectedModel)
-                    .animate(false);
+                lightSlide.setProgress((int) arFragment.getArSceneView()._environment.getIndirectLight().getIntensity());
+                modelNodeLamp.select();
+                placedLamp = true;
+            } else {
+                Toast.makeText(this, "Lampião já está na cena", Toast.LENGTH_SHORT).show();
+            }
+        }else if (modelSelection.getSelectedItem().toString().equals("Maria Bonita")) {
+            if (placedMari == false) {
+                // Create the Anchor.
+                Anchor anchor = hitResult.createAnchor();
+                anchorNode = new AnchorNode(anchor);
+                anchorNode.setParent(arFragment.getArSceneView().getScene());
 
-            lightSlide.setProgress((int) arFragment.getArSceneView()._environment.getIndirectLight().getIntensity());
-            modelNode.select();
-            placed = true;
-        }else{
-            Toast.makeText(this, "Max reached", Toast.LENGTH_SHORT).show();
+                // Create the transformable model and add it to the anchor.
+                modelNodeMari = new TransformableNode(arFragment.getTransformationSystem());
+
+                modelNodeMari.getScaleController().setMinScale(0.1f);
+                modelNodeMari.getScaleController().setMaxScale(0.2f);
+                modelNodeMari.setLocalScale(new Vector3(0.125f, 0.125f, 0.125f));
+                modelNodeMari.setParent(anchorNode);
+                modelNodeMari.setRenderable(this.SelectedModel)
+                        .animate(false);
+
+                lightSlide.setProgress((int) arFragment.getArSceneView()._environment.getIndirectLight().getIntensity());
+                modelNodeMari.select();
+                placedMari = true;
+            } else {
+                Toast.makeText(this, "Maria Bonita já está na cena", Toast.LENGTH_SHORT).show();
+            }
         }
-
     }
 
     public void removeNode(View v){
-        if(placed) {
-            modelNode.setParent(null);
+        if(placedLamp == true) {
+            modelNodeLamp.setParent(null);
+            this.placedLamp = false;
             lightSlide.setProgress(30000);
-            this.placed = false;
-            Toast.makeText(this, "Removed", Toast.LENGTH_SHORT).show();
         }
-    }
-    public void hideShow(View v){
-        if(placed) {
-            Toast.makeText(this, "Enable/Disable", Toast.LENGTH_SHORT).show();
-            modelNode.setEnabled(!modelNode.isEnabled());
+        if(placedMari == true) {
+            modelNodeMari.setParent(null);
+            this.placedMari = false;
+            lightSlide.setProgress(30000);
         }
+        //Toast.makeText(this, "Removido", Toast.LENGTH_SHORT).show();
     }
+
     public void modelAnimation(View v) {
-        if(placed){
-            modelNode.setRenderable(this.SelectedModel)
-                    .animate(false).start();
+        if (modelSelection.getSelectedItem().toString().equals("Lampião")) {
+            if (placedLamp) {
+                modelNodeLamp.setRenderable(this.SelectedModel)
+                        .animate(false).start();
+            }
+        } else if (modelSelection.getSelectedItem().toString().equals("Maria Bonita")) {
+            if (placedMari) {
+                modelNodeMari.setRenderable(this.SelectedModel)
+                        .animate(false).start();
+            }
         }
     }
 
@@ -233,10 +261,10 @@ public class ARActivity extends AppCompatActivity implements
     @Override
     public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
             String text = modelSelection.getSelectedItem().toString();
-            if (text.equals("Lampião Low")) {
-                SelectedModel = LampLowModel;
-            } else if (text.equals("Lampião High")) {
-                SelectedModel = LampHighModel;
+            if (text.equals("Lampião")) {
+                SelectedModel = LampModel;
+            } else if (text.equals("Maria Bonita")) {
+                SelectedModel = MariaModel;
             }
     }
 

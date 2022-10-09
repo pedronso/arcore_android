@@ -13,24 +13,6 @@
 
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
-        android:id="@+id/btn_hide_show"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginEnd="12dp"
-        android:layout_marginBottom="16dp"
-        android:backgroundTint="#00BCD4"
-        android:clickable="true"
-        android:focusable="true"
-        android:onClick="hideShow"
-        android:tooltipText="Ocultar/mostrar modelo"
-        app:elevation="1dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toStartOf="@+id/btn_remove"
-        app:layout_constraintHorizontal_chainStyle="spread"
-        app:srcCompat="@drawable/eye"
-        tools:ignore="SpeakableTextPresentCheck" />
-
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_remove"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -39,7 +21,7 @@
         android:layout_marginBottom="4dp"
         android:backgroundTint="#00BCD4"
         android:onClick="removeNode"
-        android:tooltipText="Remover modelo"
+        android:tooltipText="Remover modelos"
 
         app:fabSize="normal"
         app:layout_constraintBottom_toBottomOf="parent"

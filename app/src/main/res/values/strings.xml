@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Museu do Cangaço AR</string>
     <string-array name = "models">
-        <item>Lampião Low</item>
-        <item>Lampião High</item>
+        <item>Lampião</item>
+        <item>Maria Bonita</item>
     </string-array>
 </resources>
