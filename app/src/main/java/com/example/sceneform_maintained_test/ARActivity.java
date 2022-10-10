@@ -3,6 +3,7 @@ package com.example.sceneform_maintained_test;
 import androidx.appcompat.app.AppCompatActivity;
 
 import android.graphics.drawable.Drawable;
+import android.media.CamcorderProfile;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -88,10 +89,13 @@ public class ARActivity extends AppCompatActivity implements
         modelSelection.setAdapter(adapter);
         modelSelection.setOnItemSelectedListener(this);
 
+        if (getSupportActionBar() != null) {
+            getSupportActionBar().hide();
+        }
+
         loadModels();
         lightChange();
     }
-
     @Override
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {
