@@ -65,6 +65,9 @@ public class ARActivity extends AppCompatActivity implements
 
     private SeekBar lightSlide;
     private Spinner modelSelection;
+    private PhotoSaver photoSaver = new PhotoSaver(this);
+    private VideoRecorder videoRecorder = new VideoRecorder(this);
+    private boolean isRecording = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -95,7 +98,61 @@ public class ARActivity extends AppCompatActivity implements
 
         loadModels();
         lightChange();
+        setupFab();
     }
+
+    public void setupFab(){
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        if(!isRecording){
+            if(fab!=null) {
+                fab.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        if(modelNodeLamp!=null&&modelNodeLamp.isSelected())
+                            modelNodeLamp.getTransformationSystem().selectNode(null);
+                        if(modelNodeMari!=null&&modelNodeMari.isSelected()) {
+                            modelNodeMari.getTransformationSystem().selectNode(null);
+                        }
+                        arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
+
+                        view.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                photoSaver.takePhoto(arFragment.getArSceneView());
+                            }
+                        },100);
+                        view.postDelayed(new Runnable() {
+                            @Override
+                            public void run() {
+                                arFragment.getArSceneView().getPlaneRenderer().setVisible(true);
+                            }
+                        },100);
+                    }
+                });
+            }
+        }
+        fab.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                isRecording = videoRecorder.toggleRecordingState();
+                return true;
+            }
+        });
+
+        fab.setOnTouchListener(new View.OnTouchListener() {
+            @Override
+            public boolean onTouch(View view, MotionEvent motionEvent) {
+                if(motionEvent.getAction() == MotionEvent.ACTION_UP && isRecording){
+                    isRecording = videoRecorder.toggleRecordingState();
+                    Toast.makeText(ARActivity.this, "Vídeo salvo na galeria!", Toast.LENGTH_LONG).show();
+                    return true;
+                }else{
+                    return false;
+                }
+            }
+        });
+    }
+
     @Override
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
         if (fragment.getId() == R.id.arFragment) {
@@ -119,6 +176,11 @@ public class ARActivity extends AppCompatActivity implements
 
         // Fine adjust the maximum frame rate
         arSceneView.setFrameRateFactor(SceneView.FrameRate.FULL);
+
+        photoSaver =  new PhotoSaver(this);
+        videoRecorder = new VideoRecorder(this);
+        videoRecorder.sceneView = arFragment.getArSceneView();
+        videoRecorder.setVideoQuality(CamcorderProfile.QUALITY_1080P, getResources().getConfiguration().orientation);
     }
 
     public void loadModels() {
