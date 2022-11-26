@@ -1,7 +1,9 @@
 package com.example.sceneform_maintained_test
 
 import android.content.ContentValues
+import android.content.res.Resources
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Environment
@@ -10,6 +12,7 @@ import android.os.HandlerThread
 import android.provider.MediaStore
 import android.view.PixelCopy
 import android.widget.Toast
+import androidx.print.PrintHelper
 import com.google.ar.sceneform.ArSceneView
 import java.io.*
 import java.text.SimpleDateFormat
@@ -68,7 +71,7 @@ public class PhotoSaver (
         outputStream.close()
     }
 
-    fun takePhoto(arSceneView: ArSceneView) {
+    fun takePhoto(arSceneView: ArSceneView,imageResult: ImageResult) {
         val bmp =
             Bitmap.createBitmap(arSceneView.width, arSceneView.height, Bitmap.Config.ARGB_8888)
         val handlerThread = HandlerThread("PixelCopyThread")
@@ -85,6 +88,7 @@ public class PhotoSaver (
                 activity.runOnUiThread {
                     Toast.makeText(activity, "Foto capturada!", Toast.LENGTH_LONG).show()
                 }
+                imageResult.onResult(bmp)
             } else {
                 activity.runOnUiThread {
                     Toast.makeText(activity, "Não foi possível capturar a foto!", Toast.LENGTH_LONG).show()
@@ -92,6 +96,25 @@ public class PhotoSaver (
             }
             handlerThread.quitSafely()
         }, Handler(handlerThread.looper))
+    }
+
+    fun doPhotoPrint()
+    {
+        val fileName = generateFilename()
+        val date = SimpleDateFormat("yyyyMMddHHmmss", Locale.getDefault()).format(Date())
+        activity?.also { context ->
+            PrintHelper(context).apply {
+                scaleMode = PrintHelper.SCALE_MODE_FILL
+            }.also { printHelper ->
+                //var droids = R.drawable.image
+                val bitmap = BitmapFactory.decodeResource(context.resources, "${date}_screenshot,jpg".toInt())
+                printHelper.printBitmap(fileName?:return@also, bitmap)
+            }
+        }
+    }
+
+    companion object {
+        lateinit var doPhotoPrint: Any
     }
 
 }

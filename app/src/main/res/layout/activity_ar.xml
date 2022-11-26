@@ -6,6 +6,8 @@
     android:layout_height="match_parent"
     tools:context=".ARActivity">
 
+
+
     <androidx.fragment.app.FragmentContainerView
         android:id="@+id/arFragment"
         android:layout_width="match_parent"
@@ -18,9 +20,21 @@
         android:layout_gravity="bottom|end"
         android:layout_marginEnd="84dp"
         android:layout_marginBottom="16dp"
-        android:src="@android:drawable/ic_dialog_email"
+        android:backgroundTint="#00BCD4"
+        app:srcCompat="@drawable/ic_baseline_photo_camera_24"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@+id/btn_anim" />
+
+    <ImageView
+        android:id="@+id/click_image"
+        android:layout_width="match_parent"
+        android:layout_height="400dp"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
 
     <com.google.android.material.floatingactionbutton.FloatingActionButton
         android:id="@+id/btn_remove"

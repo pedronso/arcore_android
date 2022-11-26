@@ -2,13 +2,21 @@ package com.example.sceneform_maintained_test;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.ContentResolver;
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.Drawable;
 import android.media.CamcorderProfile;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.ParcelFileDescriptor;
+import android.provider.MediaStore;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.ImageView;
 import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -32,6 +40,7 @@ import com.google.ar.sceneform.HitTestResult;
 import com.google.ar.sceneform.Node;
 import com.google.ar.sceneform.SceneView;
 import com.google.ar.sceneform.Sceneform;
+import com.google.ar.sceneform.animation.ModelAnimator;
 import com.google.ar.sceneform.math.Vector3;
 import com.google.ar.sceneform.rendering.Color;
 import com.google.ar.sceneform.rendering.Light;
@@ -48,7 +57,12 @@ import com.gorisse.thomas.sceneform.light.LightEstimationKt;
 
 import org.w3c.dom.Text;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
 public class ARActivity extends AppCompatActivity implements
         FragmentOnAttachListener,
@@ -69,6 +83,12 @@ public class ARActivity extends AppCompatActivity implements
     private VideoRecorder videoRecorder = new VideoRecorder(this);
     private boolean isRecording = false;
 
+    private static final int pic_id = 123;
+
+    private FloatingActionButton take_photo_id;
+    private ImageView click_image_id;
+    static Bitmap bitmap;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -86,6 +106,8 @@ public class ARActivity extends AppCompatActivity implements
 
         lightSlide  = (SeekBar) findViewById(R.id.lightSlider);
         modelSelection = (Spinner) findViewById(R.id.modelSpinner);
+        FloatingActionButton take_photo_id = findViewById(R.id.fab);
+        //ImageView click_image_id = findViewById(R.id.click_image);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.models, android.R.layout.simple_spinner_item);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -99,18 +121,19 @@ public class ARActivity extends AppCompatActivity implements
         loadModels();
         lightChange();
         setupFab();
+        //doPhotoPrintScreen();
     }
 
     public void setupFab(){
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        if(!isRecording){
-            if(fab!=null) {
+        if(!isRecording) {
+            if (fab != null) {
                 fab.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View view) {
-                        if(modelNodeLamp!=null&&modelNodeLamp.isSelected())
+                        if (modelNodeLamp != null && modelNodeLamp.isSelected())
                             modelNodeLamp.getTransformationSystem().selectNode(null);
-                        if(modelNodeMari!=null&&modelNodeMari.isSelected()) {
+                        if (modelNodeMari != null && modelNodeMari.isSelected()) {
                             modelNodeMari.getTransformationSystem().selectNode(null);
                         }
                         arFragment.getArSceneView().getPlaneRenderer().setVisible(false);
@@ -118,40 +141,41 @@ public class ARActivity extends AppCompatActivity implements
                         view.postDelayed(new Runnable() {
                             @Override
                             public void run() {
-                                photoSaver.takePhoto(arFragment.getArSceneView());
+                                photoSaver.takePhoto(arFragment.getArSceneView(), new ImageResult() {
+                                    @Override
+                                    public void onResult(Bitmap bitmap) {
+
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                Intent n = new Intent(ARActivity.this, ImageShareActivity.class);
+                                                ARActivity.bitmap = bitmap;
+                                                startActivity(n);
+                                            }
+                                        });
+
+
+                                    }
+                                });
                             }
-                        },100);
+                        }, 100);
                         view.postDelayed(new Runnable() {
                             @Override
                             public void run() {
                                 arFragment.getArSceneView().getPlaneRenderer().setVisible(true);
                             }
-                        },100);
+                        }, 100);
+
                     }
                 });
             }
         }
-        fab.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                isRecording = videoRecorder.toggleRecordingState();
-                return true;
-            }
-        });
 
-        fab.setOnTouchListener(new View.OnTouchListener() {
-            @Override
-            public boolean onTouch(View view, MotionEvent motionEvent) {
-                if(motionEvent.getAction() == MotionEvent.ACTION_UP && isRecording){
-                    isRecording = videoRecorder.toggleRecordingState();
-                    Toast.makeText(ARActivity.this, "Vídeo salvo na galeria!", Toast.LENGTH_LONG).show();
-                    return true;
-                }else{
-                    return false;
-                }
-            }
-        });
+        if(true){
+            doPhotoPrintScreen();
+        }
     }
+
 
     @Override
     public void onAttachFragment(@NonNull FragmentManager fragmentManager, @NonNull Fragment fragment) {
@@ -202,7 +226,7 @@ public class ARActivity extends AppCompatActivity implements
                     return null;
                 });
         ModelRenderable.builder()
-                .setSource(this, R.raw.maria)
+                .setSource(this, R.raw.maria_final)
                 .setIsFilamentGltf(true)
                 .setAsyncLoadEnabled(true)
                 .build()
@@ -292,13 +316,11 @@ public class ARActivity extends AppCompatActivity implements
     public void modelAnimation(View v) {
         if (modelSelection.getSelectedItem().toString().equals("Lampião")) {
             if (placedLamp) {
-                modelNodeLamp.setRenderable(this.SelectedModel)
-                        .animate(false).start();
+                ModelAnimator.ofAnimation(modelNodeLamp.getRenderableInstance(), "Chouched").start();
             }
         } else if (modelSelection.getSelectedItem().toString().equals("Maria Bonita")) {
             if (placedMari) {
-                modelNodeMari.setRenderable(this.SelectedModel)
-                        .animate(false).start();
+                ModelAnimator.ofAnimation(modelNodeMari.getRenderableInstance(), "Chouching.001").start();
             }
         }
     }
@@ -338,4 +360,31 @@ public class ARActivity extends AppCompatActivity implements
     public void onNothingSelected(AdapterView<?> adapterView) {
 
     }
+
+    protected void doPhotoPrintScreen() {
+
+        File imgFile = new File("DCIM/MuseuDoCangacoAR/20221101070533_screenshot.jpg");
+        //if (imgFile.exists()) {
+        //Bitmap photo = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+        ImageView click_image_id = findViewById(R.id.click_image);
+        click_image_id.setImageURI(Uri.fromFile(imgFile));
+        ContentResolver resolver = getApplicationContext()
+                .getContentResolver();
+
+        // "rw" for read-and-write;
+        // "rwt" for truncating or overwriting existing file contents.
+        String readOnlyMode = "r";
+        try (ParcelFileDescriptor pfd =
+                     resolver.openFileDescriptor(Uri.fromFile(imgFile)
+
+                             , readOnlyMode)) {
+            // Perform operations on "pfd".
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
 }
+
