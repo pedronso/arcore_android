@@ -107,6 +107,7 @@ public class ARActivity extends AppCompatActivity implements
         lightSlide  = (SeekBar) findViewById(R.id.lightSlider);
         modelSelection = (Spinner) findViewById(R.id.modelSpinner);
         FloatingActionButton take_photo_id = findViewById(R.id.fab);
+
         //ImageView click_image_id = findViewById(R.id.click_image);
 
         ArrayAdapter<CharSequence> adapter = ArrayAdapter.createFromResource(this, R.array.models, android.R.layout.simple_spinner_item);
@@ -210,7 +211,7 @@ public class ARActivity extends AppCompatActivity implements
     public void loadModels() {
         WeakReference<ARActivity> weakActivity = new WeakReference<>(this);
         ModelRenderable.builder()
-                .setSource(this, R.raw.lamp_weapon_second_animation)
+                .setSource(this, R.raw.lamp_final)
                 .setIsFilamentGltf(true)
                 .setAsyncLoadEnabled(true)
                 .build()
@@ -261,6 +262,9 @@ public class ARActivity extends AppCompatActivity implements
                 modelNodeLamp = new TransformableNode(arFragment.getTransformationSystem());
                 //model.getScaleController().setMinScale(0.1f);
                 //modelNodeLamp.setLocalScale(new Vector3(1f, 1f, 1f));
+                modelNodeLamp.getScaleController().setMinScale(0.2f);
+                modelNodeLamp.getScaleController().setMaxScale(0.5f);
+                modelNodeLamp.setLocalScale(new Vector3(0.33f, 0.33f, 0.33f));
 
                 modelNodeLamp.setParent(anchorNode);
 
@@ -283,7 +287,7 @@ public class ARActivity extends AppCompatActivity implements
                 // Create the transformable model and add it to the anchor.
                 modelNodeMari = new TransformableNode(arFragment.getTransformationSystem());
 
-                modelNodeMari.getScaleController().setMinScale(0.1f);
+                modelNodeMari.getScaleController().setMinScale(0.08f);
                 modelNodeMari.getScaleController().setMaxScale(0.2f);
                 modelNodeMari.setLocalScale(new Vector3(0.125f, 0.125f, 0.125f));
                 modelNodeMari.setParent(anchorNode);

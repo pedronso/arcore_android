@@ -1,9 +1,10 @@
 package com.example.sceneform_maintained_test
 
 import android.content.ContentValues
-import android.content.res.Resources
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Canvas
+import android.graphics.Matrix
 import android.media.MediaScannerConnection
 import android.os.Build
 import android.os.Environment
@@ -71,14 +72,35 @@ public class PhotoSaver (
         outputStream.close()
     }
 
+    fun getResizedBitmap(bm: Bitmap, newWidth: Int, newHeight: Int): Bitmap? {
+        val width = bm.width
+        val height = bm.height
+        val scaleWidth = newWidth.toFloat() / width
+        val scaleHeight = newHeight.toFloat() / height
+        // CREATE A MATRIX FOR THE MANIPULATION
+        val matrix = Matrix()
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight)
+
+        // "RECREATE" THE NEW BITMAP
+        return Bitmap.createBitmap(
+            bm, 0, 0, width, height, matrix, false
+        )
+    }
+
     fun takePhoto(arSceneView: ArSceneView,imageResult: ImageResult) {
         val bmp =
             Bitmap.createBitmap(arSceneView.width, arSceneView.height, Bitmap.Config.ARGB_8888)
+        var watermark =
+            BitmapFactory.decodeResource(activity.resources, R.drawable.ra2)
+        watermark = getResizedBitmap(watermark, 300,300)
         val handlerThread = HandlerThread("PixelCopyThread")
         handlerThread.start()
 
         PixelCopy.request(arSceneView, bmp, { result ->
             if (result == PixelCopy.SUCCESS) {
+                val canvas = Canvas(bmp)
+                canvas.drawBitmap(watermark, 0f, ((bmp.height) - (watermark.height*1)).toFloat(), null)
                 if (Build.VERSION.SDK_INT <= Build.VERSION_CODES.P) {
                     val fileName = generateFilename()
                     saveBitmapToGallery(bmp, fileName ?: return@request)
