@@ -10,8 +10,14 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +30,13 @@ import android.content.pm.PackageManager
 @Composable
 fun ARScreen(permissionLauncher: ActivityResultLauncher<String>) {
     val context = LocalContext.current
+    var selectedModel by remember { mutableStateOf("Lamp") } // Começa com "Lamp" como padrão
+    val models = mapOf(
+        "Lamp" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/lamp_final.glb",
+        "Maria" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/maria_final.glb"
+    )
+    var expanded by remember { mutableStateOf(false) }
+
     Column(
         modifier = Modifier.fillMaxSize().padding(16.dp),
         verticalArrangement = Arrangement.Center,
@@ -33,6 +46,28 @@ fun ARScreen(permissionLauncher: ActivityResultLauncher<String>) {
             text = "Tela de Realidade Aumentada",
             fontSize = 24.sp
         )
+        Text(
+            text = "Modelo selecionado: $selectedModel",
+            fontSize = 16.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
+        )
+        Button(onClick = { expanded = true }) {
+            Text("Escolher Modelo")
+        }
+        DropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            models.forEach { (name, _) ->
+                DropdownMenuItem(
+                    text = { Text(name) },
+                    onClick = {
+                        selectedModel = name
+                        expanded = false
+                    }
+                )
+            }
+        }
         Button(onClick = {
             if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
                 try {
@@ -41,7 +76,7 @@ fun ARScreen(permissionLauncher: ActivityResultLauncher<String>) {
                         .buildUpon()
                         .appendQueryParameter(
                             "file",
-                            "https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Models/master/2.0/Duck/glTF/Duck.gltf"
+                            models[selectedModel]
                         )
                         .appendQueryParameter("mode", "ar_preferred")
                         .build()
@@ -57,7 +92,7 @@ fun ARScreen(permissionLauncher: ActivityResultLauncher<String>) {
                 permissionLauncher.launch(Manifest.permission.CAMERA)
             }
         }) {
-            Text(text = "Abrir SceneView")
+            Text("Abrir Modelo Selecionado")
         }
     }
 }
