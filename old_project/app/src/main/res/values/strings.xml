@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">Museu do Cangaço RA</string>
+    <string-array name="models">
+        <item>Lampião</item>
+        <item>Maria Bonita</item>
+    </string-array>
+</resources>
