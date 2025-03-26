@@ -6,15 +6,9 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.core.content.ContextCompat
 import android.Manifest
 import android.content.pm.PackageManager
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.setValue
-import com.example.cangacoar.ui.screens.ARScreen
 import com.example.cangacoar.ui.screens.HomeScreen
 
 class MainActivity : ComponentActivity() {
@@ -30,7 +24,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         setContent {
             MaterialTheme {
-                AppNavigation(cameraPermissionRequest)
+                HomeScreen(cameraPermissionRequest)
             }
         }
 
@@ -38,17 +32,5 @@ class MainActivity : ComponentActivity() {
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.CAMERA) != PackageManager.PERMISSION_GRANTED) {
             cameraPermissionRequest.launch(Manifest.permission.CAMERA)
         }
-    }
-}
-
-@Composable
-fun AppNavigation(permissionLauncher: androidx.activity.result.ActivityResultLauncher<String>) {
-    var currentScreen by remember { mutableStateOf("home") }
-
-    when (currentScreen) {
-        "home" -> HomeScreen(
-            onNavigateToAR = { currentScreen = "ar" }
-        )
-        "ar" -> ARScreen(permissionLauncher)
     }
 }
