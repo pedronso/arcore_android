@@ -44,8 +44,8 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
     val context = LocalContext.current
     var selectedModel by remember { mutableStateOf("Lampião") }
     val models = mapOf(
-        "Lampião" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/lamp_final.glb",
-        "Maria Bonita" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/maria_final.glb"
+        "Lampião" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/lamp_resize.glb",
+        "Maria Bonita" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/maria_resize.glb"
     )
     var expanded by remember { mutableStateOf(false) }
     val anchor = remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
