@@ -45,7 +45,17 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
     var selectedModel by remember { mutableStateOf("Lampião") }
     val models = mapOf(
         "Lampião" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/lamp_resize.glb",
-        "Maria Bonita" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/maria_resize.glb"
+        "Maria Bonita" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/maria_resize.glb",
+        "Pistola Luger" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/luger.glb",
+        "Carabina" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/carabina.glb",
+        "Garrucha" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/garrucha.glb",
+        "Cabaça" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/cabaca.glb",
+        "Baiaca" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/baiaca.glb",
+        "Cartucheira" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/cartucheira.glb",
+        "Óculos de Lampião" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/oculos.glb",
+        "Garrafa de vinho" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/garrafa.glb",
+        "Chapéu de couro" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/chapeu.glb",
+        "Sandálias de couro" to "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/sandalias.glb"
     )
     var expanded by remember { mutableStateOf(false) }
     val anchor = remember { mutableStateOf<androidx.compose.ui.geometry.Rect?>(null) }
