@@ -42,6 +42,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -201,6 +202,20 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
 
         Spacer(modifier = Modifier.height(40.dp))
 
+        Image(
+            painter = painterResource(id = getModelPreviewImage(selectedModel)),
+            contentDescription = "Pré-visualização do modelo",
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(200.dp)
+                .padding(top = 16.dp)
+                .clip(RoundedCornerShape(16.dp)),
+            contentScale = ContentScale.Crop
+        )
+
+
+        Spacer(modifier = Modifier.height(40.dp))
+
         Button(
             onClick = {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -253,4 +268,24 @@ fun InfoDialog(title: String, text: String, onDismiss: () -> Unit) {
         }
     )
 }
+
+@Composable
+fun getModelPreviewImage(selectedModel: String): Int {
+    return when (selectedModel) {
+        "Lampião" -> R.drawable.lamp
+        "Maria Bonita" -> R.drawable.maria
+        "Pistola Luger" -> R.drawable.luger
+        "Carabina" -> R.drawable.carabina
+        "Garrucha" -> R.drawable.garrucha
+        "Cabaça" -> R.drawable.cabaca
+        "Baiaca" -> R.drawable.baiaca
+        "Cartucheira" -> R.drawable.cartucheira
+        "Óculos de Lampião" -> R.drawable.oculos
+        "Garrafa de vinho" -> R.drawable.garrafa
+        "Chapéu de couro" -> R.drawable.chapeu
+        "Sandálias de couro" -> R.drawable.sandalias
+        else -> R.drawable.logo_ra
+    }
+}
+
 
