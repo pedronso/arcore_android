@@ -27,6 +27,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults // Importing ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -77,6 +78,10 @@ fun HomeScreen(
 
     // Escolher a imagem do logo dependendo do tema
     val logoResource = if (darkTheme) R.drawable.logo_ra_dark else R.drawable.logo_ra
+
+    // Definir a cor do botão de acordo com o tema
+    val buttonColor = if (darkTheme) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
+    val buttonContentColor = if (darkTheme) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
 
     Column(
         modifier = Modifier
@@ -204,14 +209,23 @@ fun HomeScreen(
                 } else {
                     permissionLauncher.launch(Manifest.permission.CAMERA)
                 }
-            }
+            },
+            modifier = Modifier
+                .padding(vertical = 16.dp) // Espaçamento vertical para o botão
+                .height(60.dp) // Aumenta a altura do botão
+                .fillMaxWidth(), // Ocupa a largura toda
+            colors = ButtonDefaults.buttonColors(
+                containerColor = buttonColor, // Background color of the button
+                contentColor = buttonContentColor // Text color inside the button
+            ),
+            shape = RoundedCornerShape(8.dp) // Adicionando cantos arredondados
         ) {
             Text(
                 text = "Iniciar",
-                fontSize = 28.sp,
-                color = textColor // Usando a cor do texto
+                fontSize = 28.sp
             )
         }
+
     }
 
     if (showDialog) {
