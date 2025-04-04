@@ -8,6 +8,7 @@ import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -43,9 +44,14 @@ import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
 import com.example.cangacoar.R
 import androidx.core.net.toUri
+import androidx.compose.material3.Switch
 
 @Composable
-fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
+fun HomeScreen(
+    permissionLauncher: ActivityResultLauncher<String>,
+    darkTheme: Boolean, // Recebendo o parâmetro darkTheme
+    onThemeChange: (Boolean) -> Unit // Recebendo a função onThemeChange
+) {
     val context = LocalContext.current
     var selectedModel by remember { mutableStateOf(lampiao) }
     var showDialog by remember { mutableStateOf(false) }
@@ -64,15 +70,25 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
         sandaliasCouro to  Pair(sandaliasCouro3D, sandaliasCouroDescription),
     )
 
+    // Mudando o fundo para adaptar ao tema
+    val backgroundColor = MaterialTheme.colorScheme.background
+    // Definindo a cor do texto com base no tema
+    val textColor = if (darkTheme) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onBackground
+
+    // Escolher a imagem do logo dependendo do tema
+    val logoResource = if (darkTheme) R.drawable.logo_ra_dark else R.drawable.logo_ra
+
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp),
+            .padding(8.dp)
+            .background(backgroundColor), // Define o fundo conforme o tema
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        // Alterando a imagem do logo conforme o tema
         Image(
-            painter = painterResource(id = R.drawable.logo_ra),
+            painter = painterResource(id = logoResource),
             contentDescription = "Logo do App",
             modifier = Modifier
                 .height(250.dp)
@@ -83,15 +99,36 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
         Text(
             text = "Bem-vindo ao CangacoRA!",
             fontSize = 24.sp,
-            style = MaterialTheme.typography.headlineMedium
+            style = MaterialTheme.typography.headlineMedium,
+            color = textColor // Definindo a cor do texto
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Row{
+        // Componente para alternar entre os temas
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+        ) {
+            Text(
+                text = if (darkTheme) "Modo Escuro" else "Modo Claro",
+                fontSize = 16.sp,
+                color = textColor // Usando a cor do texto
+            )
+
+            Switch(
+                checked = darkTheme,
+                onCheckedChange = { onThemeChange(it) } // Chama a função para mudar o tema
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Row {
             Text(
                 text = "Selecione o modelo",
-                fontSize = 16.sp
+                fontSize = 16.sp,
+                color = textColor // Usando a cor do texto
             )
             Spacer(modifier = Modifier.width(10.dp))
             Icon(
@@ -136,7 +173,8 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
                             fontSize = 14.sp,
                             modifier = Modifier.padding(4.dp),
                             maxLines = 2,
-                            overflow = TextOverflow.Ellipsis
+                            overflow = TextOverflow.Ellipsis,
+                            color = textColor // Usando a cor do texto
                         )
                     }
                 }
@@ -170,7 +208,8 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
         ) {
             Text(
                 text = "Iniciar",
-                fontSize = 28.sp
+                fontSize = 28.sp,
+                color = textColor // Usando a cor do texto
             )
         }
     }
@@ -216,5 +255,3 @@ fun getModelPreviewImage(selectedModel: String): Int {
         else -> R.drawable.logo_ra
     }
 }
-
-

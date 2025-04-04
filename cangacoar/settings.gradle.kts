@@ -21,3 +21,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "CangacoAR"
 include(":app")
+
