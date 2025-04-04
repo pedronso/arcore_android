@@ -71,27 +71,26 @@ fun HomeScreen(
         sandaliasCouro to  Pair(sandaliasCouro3D, sandaliasCouroDescription),
     )
 
-    // Mudando o fundo para adaptar ao tema
+    // Set background and text color depending on the theme
     val backgroundColor = MaterialTheme.colorScheme.background
-    // Definindo a cor do texto com base no tema
     val textColor = if (darkTheme) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onBackground
 
-    // Escolher a imagem do logo dependendo do tema
+    // Set logo based on the theme
     val logoResource = if (darkTheme) R.drawable.logo_ra_dark else R.drawable.logo_ra
 
-    // Definir a cor do botão de acordo com o tema
+    // Set the button colors based on the theme
     val buttonColor = if (darkTheme) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
     val buttonContentColor = if (darkTheme) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(8.dp)
-            .background(backgroundColor), // Define o fundo conforme o tema
+            .background(backgroundColor) // Ensure background color fills the entire screen
+            .padding(16.dp), // Add some padding around the content to avoid edges being too tight
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Alterando a imagem do logo conforme o tema
+        // Logo Image
         Image(
             painter = painterResource(id = logoResource),
             contentDescription = "Logo do App",
@@ -101,16 +100,17 @@ fun HomeScreen(
                 .padding(2.dp)
         )
 
+        // Welcome Text
         Text(
             text = "Bem-vindo ao CangacoRA!",
             fontSize = 24.sp,
             style = MaterialTheme.typography.headlineMedium,
-            color = textColor // Definindo a cor do texto
+            color = textColor
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Componente para alternar entre os temas
+        // Theme Toggle Switch
         Row(
             modifier = Modifier
                 .padding(16.dp)
@@ -118,22 +118,23 @@ fun HomeScreen(
             Text(
                 text = if (darkTheme) "Modo Escuro" else "Modo Claro",
                 fontSize = 16.sp,
-                color = textColor // Usando a cor do texto
+                color = textColor
             )
 
             Switch(
                 checked = darkTheme,
-                onCheckedChange = { onThemeChange(it) } // Chama a função para mudar o tema
+                onCheckedChange = { onThemeChange(it) }
             )
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
+        // Model Selection Section
         Row {
             Text(
                 text = "Selecione o modelo",
                 fontSize = 16.sp,
-                color = textColor // Usando a cor do texto
+                color = textColor
             )
             Spacer(modifier = Modifier.width(10.dp))
             Icon(
@@ -147,6 +148,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        // Model Selection Grid
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
@@ -179,7 +181,7 @@ fun HomeScreen(
                             modifier = Modifier.padding(4.dp),
                             maxLines = 2,
                             overflow = TextOverflow.Ellipsis,
-                            color = textColor // Usando a cor do texto
+                            color = textColor
                         )
                     }
                 }
@@ -188,6 +190,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(50.dp))
 
+        // Action Button
         Button(
             onClick = {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
@@ -211,21 +214,20 @@ fun HomeScreen(
                 }
             },
             modifier = Modifier
-                .padding(vertical = 16.dp) // Espaçamento vertical para o botão
-                .height(60.dp) // Aumenta a altura do botão
-                .fillMaxWidth(), // Ocupa a largura toda
+                .padding(vertical = 16.dp)
+                .height(60.dp)
+                .fillMaxWidth(),
             colors = ButtonDefaults.buttonColors(
-                containerColor = buttonColor, // Background color of the button
-                contentColor = buttonContentColor // Text color inside the button
+                containerColor = buttonColor,
+                contentColor = buttonContentColor
             ),
-            shape = RoundedCornerShape(8.dp) // Adicionando cantos arredondados
+            shape = RoundedCornerShape(8.dp)
         ) {
             Text(
                 text = "Iniciar",
                 fontSize = 28.sp
             )
         }
-
     }
 
     if (showDialog) {
