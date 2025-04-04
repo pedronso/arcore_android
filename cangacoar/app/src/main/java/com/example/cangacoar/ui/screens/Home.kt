@@ -7,34 +7,27 @@ import android.net.Uri
 import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.hoverable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Info
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.Card
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -45,7 +38,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -109,112 +102,62 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        Text(
-            text = "Selecione o modelo",
-            fontSize = 16.sp
-        )
+        Row{
+            Text(
+                text = "Selecione o modelo",
+                fontSize = 16.sp
+            )
+            Spacer(modifier = Modifier.width(10.dp))
+            Icon(
+                imageVector = Icons.Outlined.Info,
+                contentDescription = "Informações do modelo",
+                modifier = Modifier
+                    .size(24.dp)
+                    .clickable { showDialog = true }
+            )
+        }
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        Box(
+        LazyRow(
+            horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(8.dp)
-                .wrapContentSize(Alignment.Center)
+                .padding(horizontal = 8.dp)
         ) {
-            var buttonWidth by remember { mutableStateOf(0) }
+            items(models.keys.toList()) { name ->
+                val isSelected = name == selectedModel
 
-            Row(
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Button(
-                    onClick = { expanded = true },
+                Card(
+                    shape = RoundedCornerShape(12.dp),
+                    border = if (isSelected) BorderStroke(2.dp, MaterialTheme.colorScheme.primary) else null,
                     modifier = Modifier
-                        .width(250.dp)
-                        .height(50.dp),
-                    contentPadding = PaddingValues(horizontal = 12.dp)
+                        .width(150.dp)
+                        .clickable { selectedModel = name }
                 ) {
-                    Row(
-                        modifier = Modifier.fillMaxWidth(),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Box(
+                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                        Image(
+                            painter = painterResource(id = getModelPreviewImage(name)),
+                            contentDescription = name,
                             modifier = Modifier
-                                .weight(1f)
-                                .fillMaxHeight(),
-                            contentAlignment = Alignment.Center
-                        ) {
-                            Text(
-                                text = selectedModel,
-                                fontSize = 20.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-                        }
-
-                        Icon(
-                            imageVector = Icons.Default.ArrowDropDown,
-                            contentDescription = "Abrir seleção de modelos"
+                                .height(100.dp)
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(12.dp)),
+                            contentScale = ContentScale.Crop
+                        )
+                        Text(
+                            text = name,
+                            fontSize = 14.sp,
+                            modifier = Modifier.padding(4.dp),
+                            maxLines = 2,
+                            overflow = TextOverflow.Ellipsis
                         )
                     }
-                }
-
-                Spacer(modifier = Modifier.width(15.dp))
-                Icon(
-                    imageVector = Icons.Outlined.Info,
-                    contentDescription = "Informações do modelo",
-                    modifier = Modifier
-                        .size(24.dp)
-                        .clickable { showDialog = true }
-                )
-            }
-
-            val interactionSource = remember { MutableInteractionSource() }
-
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .width(220.dp)
-                    .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
-                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
-            ) {
-                models.keys.forEach { name ->
-                    DropdownMenuItem(
-                        text = {
-                            Text(
-                                name,
-                                fontSize = 16.sp,
-                                fontWeight = FontWeight.Medium
-                            )
-                        },
-                        onClick = {
-                            selectedModel = name
-                            expanded = false
-                        },
-                        modifier = Modifier
-                            .padding(horizontal = 8.dp)
-                            .clip(RoundedCornerShape(8.dp))
-                            .hoverable(interactionSource)
-                    )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(40.dp))
-
-        Image(
-            painter = painterResource(id = getModelPreviewImage(selectedModel)),
-            contentDescription = "Pré-visualização do modelo",
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp)
-                .padding(top = 16.dp)
-                .clip(RoundedCornerShape(16.dp)),
-            contentScale = ContentScale.Crop
-        )
-
-
-        Spacer(modifier = Modifier.height(40.dp))
+        Spacer(modifier = Modifier.height(50.dp))
 
         Button(
             onClick = {
