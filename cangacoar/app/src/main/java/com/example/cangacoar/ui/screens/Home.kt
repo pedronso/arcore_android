@@ -8,19 +8,26 @@ import android.util.Log
 import android.widget.Toast
 import androidx.activity.result.ActivityResultLauncher
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.hoverable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.outlined.Info
@@ -34,9 +41,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.ContextCompat
@@ -115,49 +123,83 @@ fun HomeScreen(permissionLauncher: ActivityResultLauncher<String>) {
         ) {
             var buttonWidth by remember { mutableStateOf(0) }
 
-            Button(
-                onClick = { expanded = true },
-                modifier = Modifier
-                    .onGloballyPositioned { coordinates ->
-                        buttonWidth = coordinates.size.width
-                    }
+            Row(
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text(selectedModel)
-                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = { expanded = true },
+                    modifier = Modifier
+                        .width(250.dp)
+                        .height(50.dp),
+                    contentPadding = PaddingValues(horizontal = 12.dp)
+                ) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxHeight(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Text(
+                                text = selectedModel,
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.Bold
+                            )
+                        }
+
+                        Icon(
+                            imageVector = Icons.Default.ArrowDropDown,
+                            contentDescription = "Abrir seleção de modelos"
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(15.dp))
                 Icon(
-                    imageVector = Icons.Default.ArrowDropDown,
-                    contentDescription = "Abrir seleção de modelos"
+                    imageVector = Icons.Outlined.Info,
+                    contentDescription = "Informações do modelo",
+                    modifier = Modifier
+                        .size(24.dp)
+                        .clickable { showDialog = true }
                 )
             }
 
-            Icon(
-                imageVector = Icons.Outlined.Info,
-                contentDescription = "Informações do modelo",
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .offset(x = (buttonWidth / 4.5).dp)
-                    .size(24.dp)
-                    .clickable { showDialog = true }
-            )
+            val interactionSource = remember { MutableInteractionSource() }
 
             DropdownMenu(
                 expanded = expanded,
                 onDismissRequest = { expanded = false },
-                modifier = Modifier.width(200.dp)
+                modifier = Modifier
+                    .width(220.dp)
+                    .background(MaterialTheme.colorScheme.surface, shape = RoundedCornerShape(12.dp))
+                    .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(12.dp))
             ) {
                 models.keys.forEach { name ->
                     DropdownMenuItem(
-                        text = { Text(name) },
+                        text = {
+                            Text(
+                                name,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        },
                         onClick = {
                             selectedModel = name
                             expanded = false
-                        }
+                        },
+                        modifier = Modifier
+                            .padding(horizontal = 8.dp)
+                            .clip(RoundedCornerShape(8.dp))
+                            .hoverable(interactionSource)
                     )
                 }
             }
         }
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(40.dp))
 
         Button(
             onClick = {
