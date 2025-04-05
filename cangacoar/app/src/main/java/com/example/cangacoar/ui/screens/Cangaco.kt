@@ -41,7 +41,7 @@ const val garrafaVinho3D = "https://github.com/pedronso/arcore_android/raw/refs/
 const val garrafaVinhoDescription = "A garrafa de vinho, embora não fosse um item essencial como a cabaça, era ocasionalmente carregada pelos cangaceiros em momentos de celebração ou repouso. Feita de vidro ou cerâmica, podia conter bebidas alcoólicas como vinho ou cachaça, adquiridas em saques ou trocas com moradores locais. Representava um raro luxo no árduo cotidiano do sertão, sendo um símbolo de status entre os bandos de Lampião."
 
 const val chapeuCouro = "Chapéu de couro"
-const val chapeuCouro3D = "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/chapeu.glb"
+const val chapeuCouro3D = "https://github.com/pedronso/arcore_android/raw/refs/heads/master/cangacoar/resources/models/chapeu_high.glb"
 const val chapeuCouroDescription = "O chapéu serviu de suporte de arte, já que eram colocados alguns enfeites, e também de alerta, pois nenhum cangaceiro poderia correr o risco de ser surpreendido em uma emboscada, por isso não usavam com a aba abaixada escondendo os olhos."
 
 const val sandaliasCouro = "Sandálias de couro"
