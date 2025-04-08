@@ -113,13 +113,16 @@ fun HomeScreen(
         // Theme Toggle Switch
         Row(
             modifier = Modifier
-                .padding(16.dp)
+                .padding(16.dp),
+            verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
                 text = if (darkTheme) "Modo Escuro" else "Modo Claro",
                 fontSize = 16.sp,
                 color = textColor
             )
+
+            Spacer(modifier = Modifier.width(10.dp))
 
             Switch(
                 checked = darkTheme,
