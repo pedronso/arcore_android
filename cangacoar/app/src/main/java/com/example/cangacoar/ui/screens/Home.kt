@@ -115,7 +115,8 @@ fun HomeScreen(
                 contentDescription = "Informações do modelo",
                 modifier = Modifier
                     .size(24.dp)
-                    .clickable { showDialog = true }
+                    .clickable { showDialog = true },
+                tint = MaterialTheme.colorScheme.onSurface
             )
         }
 
