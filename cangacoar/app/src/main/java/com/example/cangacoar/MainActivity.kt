@@ -5,6 +5,7 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.core.content.ContextCompat
@@ -22,19 +23,19 @@ class MainActivity : ComponentActivity() {
         }
     }
 
-    private var darkTheme by mutableStateOf(false) // false significa Light Mode, true significa Dark Mode
+    //private var darkTheme by mutableStateOf(false) // false significa Light Mode, true significa Dark Mode
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            CangacoARTheme(darkTheme = darkTheme) {
+            CangacoARTheme {//(darkTheme = isDarkTheme) {
                 HomeScreen(
-                    permissionLauncher = cameraPermissionRequest,
-                    darkTheme = darkTheme,
-                    onThemeChange = { newDarkTheme: Boolean -> // Especificando explicitamente o tipo de `newDarkTheme` como Boolean para tirar o erro
-                        darkTheme = newDarkTheme
-                    }
+                    permissionLauncher = cameraPermissionRequest
+//                    darkTheme = darkTheme,
+//                    onThemeChange = { newDarkTheme: Boolean -> // Especificando explicitamente o tipo de `newDarkTheme` como Boolean para tirar o erro
+//                        darkTheme = newDarkTheme
+//                    }
                 )
             }
         }

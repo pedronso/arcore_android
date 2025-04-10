@@ -46,12 +46,11 @@ import androidx.core.content.ContextCompat
 import com.example.cangacoar.R
 import androidx.core.net.toUri
 import androidx.compose.material3.Switch
+import androidx.compose.foundation.isSystemInDarkTheme
 
 @Composable
 fun HomeScreen(
-    permissionLauncher: ActivityResultLauncher<String>,
-    darkTheme: Boolean, // Recebendo o parâmetro darkTheme
-    onThemeChange: (Boolean) -> Unit // Recebendo a função onThemeChange
+    permissionLauncher: ActivityResultLauncher<String>
 ) {
     val context = LocalContext.current
     var selectedModel by remember { mutableStateOf(lampiao) }
@@ -59,38 +58,33 @@ fun HomeScreen(
     val models = mapOf(
         lampiao to Pair(lampiao3D, lampiaoDescription),
         mariaBonita to Pair(mariaBonita3D, mariaBonitaDescription),
-        pistolaLuger to  Pair(pistolaLuger3D, pistolaLugerDescription),
-        carabina to  Pair(carabina3D, carabinaDescription),
-        garrucha to  Pair(garrucha3D, garruchaDescription),
-        cabaca to  Pair(cabaca3D, cabacaDescription),
-        baiaca to  Pair(baiaca3D, baiacaDescription),
-        cartucheira to  Pair(cartucheira3D, cartucheiraDescription),
-        oculosLampiao to  Pair(oculosLampiao3D, oculosLampiaoDescription),
-        garrafaVinho to  Pair(garrafaVinho3D, garrafaVinhoDescription),
-        chapeuCouro to  Pair(chapeuCouro3D, chapeuCouroDescription),
-        sandaliasCouro to  Pair(sandaliasCouro3D, sandaliasCouroDescription),
+        pistolaLuger to Pair(pistolaLuger3D, pistolaLugerDescription),
+        carabina to Pair(carabina3D, carabinaDescription),
+        garrucha to Pair(garrucha3D, garruchaDescription),
+        cabaca to Pair(cabaca3D, cabacaDescription),
+        baiaca to Pair(baiaca3D, baiacaDescription),
+        cartucheira to Pair(cartucheira3D, cartucheiraDescription),
+        oculosLampiao to Pair(oculosLampiao3D, oculosLampiaoDescription),
+        garrafaVinho to Pair(garrafaVinho3D, garrafaVinhoDescription),
+        chapeuCouro to Pair(chapeuCouro3D, chapeuCouroDescription),
+        sandaliasCouro to Pair(sandaliasCouro3D, sandaliasCouroDescription),
     )
 
-    // Set background and text color depending on the theme
+    val isDarkTheme = isSystemInDarkTheme() // Usa o estado do sistema diretamente
     val backgroundColor = MaterialTheme.colorScheme.background
-    val textColor = if (darkTheme) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.onBackground
-
-    // Set logo based on the theme
-    val logoResource = if (darkTheme) R.drawable.logo_ra_dark else R.drawable.logo_ra
-
-    // Set the button colors based on the theme
-    val buttonColor = if (darkTheme) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-    val buttonContentColor = if (darkTheme) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSecondary
+    val textColor = MaterialTheme.colorScheme.onBackground
+    val logoResource = if (isDarkTheme) R.drawable.logo_ra_dark else R.drawable.logo_ra
+    val buttonColor = MaterialTheme.colorScheme.primary
+    val buttonContentColor = MaterialTheme.colorScheme.onPrimary
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor) // Ensure background color fills the entire screen
-            .padding(16.dp), // Add some padding around the content to avoid edges being too tight
+            .background(backgroundColor)
+            .padding(16.dp),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Logo Image
         Image(
             painter = painterResource(id = logoResource),
             contentDescription = "Logo do App",
@@ -100,7 +94,6 @@ fun HomeScreen(
                 .padding(2.dp)
         )
 
-        // Welcome Text
         Text(
             text = "Bem-vindo ao CangacoRA!",
             fontSize = 24.sp,
@@ -110,29 +103,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Theme Toggle Switch
-        Row(
-            modifier = Modifier
-                .padding(16.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = if (darkTheme) "Modo Escuro" else "Modo Claro",
-                fontSize = 16.sp,
-                color = textColor
-            )
-
-            Spacer(modifier = Modifier.width(10.dp))
-
-            Switch(
-                checked = darkTheme,
-                onCheckedChange = { onThemeChange(it) }
-            )
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Model Selection Section
         Row {
             Text(
                 text = "Selecione o modelo",
@@ -151,7 +121,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        // Model Selection Grid
         LazyRow(
             horizontalArrangement = Arrangement.spacedBy(12.dp),
             modifier = Modifier
@@ -193,7 +162,6 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(50.dp))
 
-        // Action Button
         Button(
             onClick = {
                 if (ContextCompat.checkSelfPermission(context, Manifest.permission.CAMERA) == PackageManager.PERMISSION_GRANTED) {
